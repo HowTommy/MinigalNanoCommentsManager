@@ -1,0 +1,4 @@
+*.suo
+CreateCommentsMinigal/obj/Debug/*
+CreateCommentsMinigal/bin/Debug/CreateCommentsMinigal.v*
+CreateCommentsMinigal/bin/Debug/CreateCommentsMinigal.p*
