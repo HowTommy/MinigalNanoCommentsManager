@@ -12,7 +12,7 @@ namespace CreateCommentsMinigal
         private string[] _files;
 
         private int _currentPicture;
- 
+
         public Form1()
         {
             InitializeComponent();
@@ -20,35 +20,56 @@ namespace CreateCommentsMinigal
 
         private void btLoadPictures_Click(object sender, EventArgs e)
         {
-            string path = txtPath.Text;
-            _files = Directory.GetFiles(path).Where(p => p.EndsWith(".jpg") || p.EndsWith(".jpeg") || p.EndsWith(".png")).ToArray();
-
-            if (_files.Any())
+            try
             {
-                _currentPicture = 0;
-                LoadImage();
+                if (txtPath.Text.Trim() != "")
+                {
+                    string path = txtPath.Text.Trim();
+                    _files = Directory.GetFiles(path).Where(p => p.EndsWith(".jpg") || p.EndsWith(".jpeg") || p.EndsWith(".png")).ToArray();
+
+                    if (_files.Any())
+                    {
+                        _currentPicture = 0;
+                        LoadImage();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Sorry, an error occured :(");
+
+                File.AppendAllText("logs.txt", DateTime.UtcNow.ToString() + Environment.NewLine + ex.ToString() + Environment.NewLine + Environment.NewLine);
             }
         }
 
         private void LoadImage()
         {
-            if (_currentPicture > _files.Count() - 1)
+            try
             {
-                _currentPicture = 0;
+                if (_currentPicture > _files.Count() - 1)
+                {
+                    _currentPicture = 0;
+                }
+                else if (_currentPicture == -1)
+                {
+                    _currentPicture = _files.Count() - 1;
+                }
+                var path = _files[_currentPicture];
+                pictureBox1.Image = new Bitmap(path);
+                if (File.Exists(path + ".html"))
+                {
+                    txtComment.Text = File.ReadAllText(path + ".html");
+                }
+                else
+                {
+                    txtComment.Text = "";
+                }
             }
-            else if (_currentPicture == -1)
+            catch (Exception ex)
             {
-                _currentPicture = _files.Count() - 1;
-            }
-            var path = _files[_currentPicture];
-            pictureBox1.Image = new Bitmap(path);
-            if (File.Exists(path + ".html"))
-            {
-                txtComment.Text = File.ReadAllText(path + ".html");
-            }
-            else
-            {
-                txtComment.Text = "";
+                MessageBox.Show("Sorry, an error occured :(");
+
+                File.AppendAllText("logs.txt", DateTime.UtcNow.ToString() + Environment.NewLine + ex.ToString() + Environment.NewLine + Environment.NewLine);
             }
         }
 
@@ -66,14 +87,23 @@ namespace CreateCommentsMinigal
 
         private void btSave_Click(object sender, EventArgs e)
         {
-            var path = _files[_currentPicture] + ".html";
-            File.WriteAllText(path, txtComment.Text);
-            this.btNext_Click(sender, e);
+            try
+            {
+                var path = _files[_currentPicture] + ".html";
+                File.WriteAllText(path, txtComment.Text);
+                this.btNext_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Sorry, an error occured :(");
+
+                File.AppendAllText("logs.txt", DateTime.UtcNow.ToString() + Environment.NewLine + ex.ToString() + Environment.NewLine + Environment.NewLine);
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+
         }
 
         private void btSearch_Click(object sender, EventArgs e)
